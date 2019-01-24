@@ -20,6 +20,7 @@ const reuest = new HttpRequest({
   baseUrl: 'http://localhost:3000',
 });
 
+
 reuest.get('/user/12345', { onDownloadProgress, headers: {contentType: undefined} })
   .then(response => {
     console.log(response);
