@@ -1,40 +1,70 @@
+function _addHeader(request, headersObj) {
+  if (headersObj instanceof Headers) {
+    const headersArr = headersObj.entries();
+
+    for (const header of headersArr) {
+      request.setRequestHeader(header[0], header[1]);
+    }
+  } else {
+    for (const key in headersObj) {
+      request.setRequestHeader(key, headersObj[key]);
+    }
+  }
+}
+
 class HttpRequest {
-  // get request options({ baseUrl, headers })
   constructor({ baseUrl, headers }) {
     this.baseUrl = baseUrl;
     this.headers = headers;
   }
 
   get(url, config) {
-    return fetch(url).then(d =>d.text())
-    // write code this
+    const { transformResponse, headers, params, responseType = 'json', onUploadProgress, onDownloadProgress } = config;
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+
+    _addHeader(xhr, this.headers);
+    _addHeader(xhr, headers);
+
+    return new Promise((resolve, reject) => {
+      xhr.onloadend = () => {
+        if (xhr.status === 200) {
+          resolve(xhr.responseText);
+        } else {
+          reject(xhr.responseText);
+        }
+      };
+      xhr.send();
+    });
   }
 
   post(url, config) {
-  // write code this
+    const { transformResponse, headers, data, params, responseType, onUploadProgress, onDownloadProgress } = config;
   }
 }
 
-/*
-const reuest = new HttpRequest({
-  baseUrl: 'http://localhost:3000',
+
+/* const reuest = new HttpRequest({
+  baseUrl: 'http://localhost:8000'
 });
 
 reuest.get('/user/12345', { onDownloadProgress, headers: {contentType: undefined} })
   .then(response => {
-    console.log(response);
+    console.log('response1', response);
   })
   .catch(e => {
-    console.log(e)
-  });
+    console.log('response2', e)
+  }); */
 
-reuest.post('/save', { data: formdata, header, onUploadProgress })
-  .then(response => {
-    console.log(response);
-  })
-  .catch(e => {
-    console.log(e)
-  });
+// reuest.post('/save', { data: formdata, header, onUploadProgress })
+//   .then(response => {
+//     console.log(response);
+//   })
+//   .catch(e => {
+//     console.log(e)
+//   });
+
+/*
 
 config = {
 
