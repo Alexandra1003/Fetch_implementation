@@ -1,4 +1,4 @@
-function _addHeader(request, headersObj) {
+function addHeader(request, headersObj) {
   if (headersObj instanceof Headers) {
     const headersArr = headersObj.entries();
 
@@ -12,6 +12,22 @@ function _addHeader(request, headersObj) {
   }
 }
 
+function setParams(baseUrl, getUrl, paramsObj) {
+  const resURL = new URL(baseUrl + getUrl);
+
+  if (paramsObj instanceof URLSearchParams) {
+    for (const param of paramsObj.entries()) {
+      resURL.searchParams.append(param[0], param[1]);
+    }
+  } else {
+    for (const param in paramsObj) {
+      resURL.searchParams.append(param, paramsObj[param]);
+    }
+  }
+
+  return resURL;
+}
+
 class HttpRequest {
   constructor({ baseUrl, headers }) {
     this.baseUrl = baseUrl;
@@ -19,12 +35,14 @@ class HttpRequest {
   }
 
   get(url, config) {
-    const { transformResponse, headers, params, responseType = 'json', onUploadProgress, onDownloadProgress } = config;
+    const { transformResponse, headers, params, responseType = 'json', onDownloadProgress } = config;
     const xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
+    const resultUrl = setParams(this.baseUrl, url, params);
 
-    _addHeader(xhr, this.headers);
-    _addHeader(xhr, headers);
+    xhr.open('GET', resultUrl, true);
+
+    addHeader(xhr, this.headers);
+    addHeader(xhr, headers);
 
     return new Promise((resolve, reject) => {
       xhr.onloadend = () => {
@@ -39,7 +57,7 @@ class HttpRequest {
   }
 
   post(url, config) {
-    const { transformResponse, headers, data, params, responseType, onUploadProgress, onDownloadProgress } = config;
+    const { transformResponse, headers, data, params, responseType, onUploadProgress } = config;
   }
 }
 
