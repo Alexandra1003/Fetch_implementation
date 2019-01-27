@@ -86,6 +86,7 @@ class HttpRequest {
   }
 
   post(url, config) {
+   /*  debugger */
     const { transformResponse, headers, data, params, responseType = 'json', onUploadProgress } = config;
     const xhr = new XMLHttpRequest();
     const resultUrl = setParams(this.baseUrl, url, params);
@@ -95,7 +96,7 @@ class HttpRequest {
     addHeader(xhr, this.headers);
     addHeader(xhr, headers);
     xhr.responseType = responseType;
-    xhr.addEventListener('progress', onUploadProgress);
+    // xhr.addEventListener('progress', onUploadProgress);
 
     return new Promise((resolve, reject) => {
       xhr.onloadend = () => {
