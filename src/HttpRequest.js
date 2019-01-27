@@ -37,6 +37,18 @@ function updateResponse(response, transformFunc) {
   return transformFunc(response);
 }
 
+function onDownloadProgress(progressEvent) {
+  if (progressEvent.lengthComputable) {
+    const percentComplete = progressEvent.loaded / progressEvent.total;
+  }
+}
+
+function onUploadProgress(progressEvent) {
+  if (progressEvent.lengthComputable) {
+    const percentComplete = progressEvent.loaded / progressEvent.total;
+  }
+}
+
 class HttpRequest {
   constructor({ baseUrl, headers }) {
     this.baseUrl = baseUrl;
@@ -52,6 +64,8 @@ class HttpRequest {
 
     addHeader(xhr, this.headers);
     addHeader(xhr, headers);
+    xhr.responseType = responseType;
+    xhr.addEventListener('progress', onDownloadProgress);
 
     return new Promise((resolve, reject) => {
       xhr.onloadend = () => {
@@ -72,24 +86,51 @@ class HttpRequest {
   }
 
   post(url, config) {
-    const { transformResponse, headers, data, params, responseType, onUploadProgress } = config;
+    const { transformResponse, headers, data, params, responseType = 'json', onUploadProgress } = config;
+    const xhr = new XMLHttpRequest();
+    const resultUrl = setParams(this.baseUrl, url, params);
+
+    xhr.open('POST', resultUrl, true);
+
+    addHeader(xhr, this.headers);
+    addHeader(xhr, headers);
+    xhr.responseType = responseType;
+    xhr.addEventListener('progress', onUploadProgress);
+
+    return new Promise((resolve, reject) => {
+      xhr.onloadend = () => {
+        let resultResponse = xhr.response;
+
+        if (transformResponse !== undefined) {
+          resultResponse = updateResponse(xhr.response, transformResponse);
+        }
+
+        if (xhr.status === 200) {
+          resolve(resultResponse);
+        } else {
+          reject(resultResponse);
+        }
+      };
+      xhr.send(data);
+    });
   }
 }
 
 
-/* const reuest = new HttpRequest({
+/*  const reuest = new HttpRequest({
   baseUrl: 'http://localhost:8000'
-});
+}); */
 
-reuest.get('/user/12345', { onDownloadProgress, headers: {contentType: undefined} })
+/* reuest.get('/user/12345', { onDownloadProgress, headers: {contentType: undefined} })
   .then(response => {
     console.log('response1', response);
   })
   .catch(e => {
     console.log('response2', e)
-  }); */
+  });  */
 
-// reuest.post('/save', { data: formdata, header, onUploadProgress })
+// reuest.post('/ping', { data: {firstName: 'Fred'}, headers: {'Content-Type' : 'text/html'},
+// responseType: "text", onUploadProgress })
 //   .then(response => {
 //     console.log(response);
 //   })
