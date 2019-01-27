@@ -28,6 +28,15 @@ function setParams(baseUrl, getUrl, paramsObj) {
   return resURL;
 }
 
+function updateResponse(response, transformFunc) {
+  if (transformFunc instanceof Array) {
+    const resultResponse = transformFunc.reduce((accum, func) => func(accum), response);
+
+    return resultResponse;
+  }
+  return transformFunc(response);
+}
+
 class HttpRequest {
   constructor({ baseUrl, headers }) {
     this.baseUrl = baseUrl;
@@ -46,10 +55,16 @@ class HttpRequest {
 
     return new Promise((resolve, reject) => {
       xhr.onloadend = () => {
+        let resultResponse = xhr.response;
+
+        if (transformResponse !== undefined) {
+          resultResponse = updateResponse(xhr.response, transformResponse);
+        }
+
         if (xhr.status === 200) {
-          resolve(xhr.responseText);
+          resolve(resultResponse);
         } else {
-          reject(xhr.responseText);
+          reject(resultResponse);
         }
       };
       xhr.send();
