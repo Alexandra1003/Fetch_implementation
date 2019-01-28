@@ -13,13 +13,30 @@ function downloadFile(url, fileName) {
   a.click();
 }
 
+function onDownloadProgress(progressEvent) {
+  if (progressEvent.lengthComputable) {
+    const percentComplete = Math.round(progressEvent.loaded / progressEvent.total * 100);
+    const progressBar = document.querySelector('.downloadBar');
+    progressBar.style.width = `${percentComplete}%`;
+  }
+}
+
+function onUploadProgress(progressEvent) {
+  if (progressEvent.lengthComputable) {
+    const percentComplete = Math.round(progressEvent.loaded / progressEvent.total * 100);
+    const progressBar = document.querySelector('.uploadBar');
+    progressBar.style.width = `${percentComplete}%`;
+    progressBar.innerText = `${percentComplete}%`;
+  }
+}
+
 document.getElementById('uploadForm').onsubmit = function(e) {
   e.preventDefault();
   const form = new FormData();
   const myHeaders = new Headers();
   myHeaders.append('Content-Type', 'multipart/form-data');
   form.append('sampleFile', e.target.sampleFile.files[0]);
-  request.post('/upload', { data: form }).then(data => {
+  request.post('/upload', { data: form, onUploadProgress }).then(data => {
     console.log(data);// eslint-disable-line
   })
     .catch(err => {

@@ -37,18 +37,6 @@ function updateResponse(response, transformFunc) {
   return transformFunc(response);
 }
 
-function onDownloadProgress(progressEvent) {
-  if (progressEvent.lengthComputable) {
-    const percentComplete = progressEvent.loaded / progressEvent.total;
-  }
-}
-
-function onUploadProgress(progressEvent) {
-  if (progressEvent.lengthComputable) {
-    const percentComplete = progressEvent.loaded / progressEvent.total;
-  }
-}
-
 class HttpRequest {
   constructor({ baseUrl, headers }) {
     this.baseUrl = baseUrl;
@@ -65,7 +53,10 @@ class HttpRequest {
     addHeader(xhr, this.headers);
     addHeader(xhr, headers);
     xhr.responseType = responseType;
-    xhr.addEventListener('progress', onDownloadProgress);
+
+    if (onDownloadProgress !== undefined) {
+      xhr.addEventListener('progress', onDownloadProgress);
+    }
 
     return new Promise((resolve, reject) => {
       xhr.onloadend = () => {
@@ -92,10 +83,12 @@ class HttpRequest {
 
     xhr.open('POST', resultUrl, true);
 
+    if (onUploadProgress !== undefined) {
+      xhr.upload.onprogress = event => onUploadProgress(event);
+    }
     addHeader(xhr, this.headers);
     addHeader(xhr, headers);
     xhr.responseType = responseType;
-    xhr.addEventListener('progress', onUploadProgress);
 
     return new Promise((resolve, reject) => {
       xhr.onloadend = () => {
