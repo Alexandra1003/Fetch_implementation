@@ -4,6 +4,7 @@ const fileUpload = require('express-fileupload');
 const app = express();
 const fs = require('fs');
 
+app.use(express.static(__dirname + '/src'));
 app.use('/form', express.static(__dirname + '/index.html'));
 app.use('/progress.js', express.static(__dirname + '/src/progress.js'));
 app.use('/HttpRequest.js', express.static(__dirname + '/src/HttpRequest.js'));
