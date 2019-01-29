@@ -8,25 +8,58 @@
 </head>
 
 <body>
-  <div class="progress" style="height: 3px;">
-    <div class="progress-bar downloadBar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-  </div>
+  <main>
+    <div class="progress transparent" style="height: 3px;">
+      <div class="progress-bar downloadBar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
+    <div class="container-fluid col-sm-6">
 
-  <form id='uploadForm' encType="multipart/form-data">
-    <input type="file" name="sampleFile" />
-    <input type='submit' value='Upload!' />
-  </form>
+      <form class='uploadForm' class='mb-1' encType="multipart/form-data">
+        <div class="input-group">
+          <div class="custom-file">
+            <input type="file" name="sampleFile" class="custom-file-input uploadInput">
+            <label class="custom-file-label">Choose file</label>
+          </div>
+          <div class="input-group-append">
+            <button class="btn btn-info uploadButton disabled" type="submit">Upload</button>
+          </div>
+        </div>
+      </form>
 
-  <div class="progress">
-    <div class="progress-bar uploadBar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0"
-      aria-valuemax="100">0%</div>
-  </div>
+      <div class="alert alert-danger uploadError hidden" role="alert">
+      </div>
 
-  <form id='downloadForm'>
-    <input type="text" name="sampleFile" />
-    <input type='submit' value='Download!' />
-  </form>
-  <img class='image' />
+      <div class="progress mb-3 transparent">
+        <div class="progress-bar uploadBar" role="progressbar" aria-valuenow="0" aria-valuemin="0"
+          aria-valuemax="100">0%</div>
+      </div>
+
+      <div class="text-center mb-4 col-sm-12 hidden">
+        <img class='image rounded' />
+      </div>
+
+      <form class='downloadForm'>
+        <div class="input-group">
+          <input type="text" class="form-control downloadInput" name="sampleFile">
+          <div class="input-group-append">
+            <button class="btn btn-info downloadButton disabled" type="submit">Download</button>
+          </div>
+        </div>
+      </form>
+
+      <div class="alert alert-danger downloadError hidden" role="alert">
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h6 class="card-subtitle mb-2 text-muted">Available files:</h6>
+          <ul class="list-group">
+          </ul>
+        </div>
+      </div>
+    </div>
+  </main>
+
 </body>
 <script src="HttpRequest.js"></script>
 <script src="progress.js"></script>
