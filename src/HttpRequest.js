@@ -28,13 +28,13 @@ function setParams(baseUrl, getUrl, paramsObj) {
   return resURL;
 }
 
-function updateResponse(response, transformFunc) {
+function transformData(element, transformFunc) {
   if (transformFunc instanceof Array) {
-    const resultResponse = transformFunc.reduce((accum, func) => func(accum), response);
+    const resultData = transformFunc.reduce((accum, func) => func(accum), element);
 
-    return resultResponse;
+    return resultData;
   }
-  return transformFunc(response);
+  return transformFunc(element);
 }
 
 class HttpRequest {
@@ -63,7 +63,7 @@ class HttpRequest {
         let resultResponse = xhr.response;
 
         if (transformResponse !== undefined) {
-          resultResponse = updateResponse(xhr.response, transformResponse);
+          resultResponse = transformData(xhr.response, transformResponse);
         }
 
         if (xhr.status === 200) {
@@ -77,11 +77,17 @@ class HttpRequest {
   }
 
   post(url, config = {}) {
-    const { transformResponse, headers, data, params, responseType = 'json', onUploadProgress } = config;
+    const { transformResponse, transformRequest, headers, data, params,
+      responseType = 'json', onUploadProgress } = config;
     const xhr = new XMLHttpRequest();
     const resultUrl = setParams(this.baseUrl, url, params);
+    let resultData = data;
 
     xhr.open('POST', resultUrl, true);
+
+    if (transformRequest !== undefined) {
+      resultData = transformData(data, transformRequest);
+    }
 
     if (onUploadProgress !== undefined) {
       xhr.upload.onprogress = event => onUploadProgress(event);
@@ -95,7 +101,7 @@ class HttpRequest {
         let resultResponse = xhr.response;
 
         if (transformResponse !== undefined) {
-          resultResponse = updateResponse(xhr.response, transformResponse);
+          resultResponse = transformData(xhr.response, transformResponse);
         }
 
         if (xhr.status === 200) {
@@ -104,7 +110,7 @@ class HttpRequest {
           reject(xhr);
         }
       };
-      xhr.send(data);
+      xhr.send(resultData);
     });
   }
 }
