@@ -37,6 +37,39 @@ function transformData(element, transformFunc) {
   return transformFunc(element);
 }
 
+function prepareRequest(requestParams) {
+  const { url, config = {}, method, thisArg } = requestParams;
+  const { headers, params, responseType = 'json' } = config;
+  const xhr = new XMLHttpRequest();
+  const resultUrl = setParams(thisArg.baseUrl, url, params);
+
+  xhr.open(method, resultUrl, true);
+  addHeader(xhr, thisArg.headers);
+  addHeader(xhr, headers);
+  xhr.responseType = responseType;
+
+  return xhr;
+}
+
+function sendRequest(request, transformResponse, requestBody) {
+  return new Promise((resolve, reject) => {
+    request.onloadend = () => {
+      let resultResponse = request.response;
+
+      if (transformResponse !== undefined) {
+        resultResponse = transformData(request.response, transformResponse);
+      }
+
+      if (request.status === 200) {
+        resolve(resultResponse);
+      } else {
+        reject(request);
+      }
+    };
+    requestBody ? request.send(requestBody) : request.send();
+  });
+}
+
 class HttpRequest {
   constructor({ baseUrl, headers }) {
     this.baseUrl = baseUrl;
@@ -44,73 +77,29 @@ class HttpRequest {
   }
 
   get(url, config = {}) {
-    const { transformResponse, headers, params, responseType = 'json', onDownloadProgress } = config;
-    const xhr = new XMLHttpRequest();
-    const resultUrl = setParams(this.baseUrl, url, params);
-
-    xhr.open('GET', resultUrl, true);
-
-    addHeader(xhr, this.headers);
-    addHeader(xhr, headers);
-    xhr.responseType = responseType;
+    const { transformResponse, onDownloadProgress } = config;
+    const xhr = prepareRequest({ url, config, method: 'GET', thisArg: this });
 
     if (onDownloadProgress !== undefined) {
       xhr.addEventListener('progress', onDownloadProgress);
     }
 
-    return new Promise((resolve, reject) => {
-      xhr.onloadend = () => {
-        let resultResponse = xhr.response;
-
-        if (transformResponse !== undefined) {
-          resultResponse = transformData(xhr.response, transformResponse);
-        }
-
-        if (xhr.status === 200) {
-          resolve(resultResponse);
-        } else {
-          reject(xhr);
-        }
-      };
-      xhr.send();
-    });
+    return sendRequest(xhr, transformResponse);
   }
 
   post(url, config = {}) {
-    const { transformResponse, transformRequest, headers, data, params,
-      responseType = 'json', onUploadProgress } = config;
-    const xhr = new XMLHttpRequest();
-    const resultUrl = setParams(this.baseUrl, url, params);
-    let resultData = data;
-
-    xhr.open('POST', resultUrl, true);
+    const { transformResponse, transformRequest, data, onUploadProgress } = config;
+    const xhr = prepareRequest({ url, config, method: 'POST', thisArg: this });
+    let requestBody = data;
 
     if (transformRequest !== undefined) {
-      resultData = transformData(data, transformRequest);
+      requestBody = transformData(data, transformRequest);
     }
 
     if (onUploadProgress !== undefined) {
       xhr.upload.onprogress = event => onUploadProgress(event);
     }
-    addHeader(xhr, this.headers);
-    addHeader(xhr, headers);
-    xhr.responseType = responseType;
 
-    return new Promise((resolve, reject) => {
-      xhr.onloadend = () => {
-        let resultResponse = xhr.response;
-
-        if (transformResponse !== undefined) {
-          resultResponse = transformData(xhr.response, transformResponse);
-        }
-
-        if (xhr.status === 200) {
-          resolve(resultResponse);
-        } else {
-          reject(xhr);
-        }
-      };
-      xhr.send(resultData);
-    });
+    return sendRequest(xhr, transformResponse, requestBody);
   }
 }
