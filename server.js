@@ -22,7 +22,8 @@ app.get('/ping', function (req, res) {
 app.get('/list', function (req, res) {
   const uploadPath = __dirname + '/uploads/';
   fs.readdir(uploadPath, (err, files) => {
-    res.send(files);
+    const resultArr = files.filter(file => file !== '.gitkeep');
+    res.send(resultArr);
   });
 });
 app.post('/upload', function (req, res) {

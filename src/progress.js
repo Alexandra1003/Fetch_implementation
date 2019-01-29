@@ -27,6 +27,14 @@ function isImage(type) {
   return allowedFileTypes.includes(type);
 }
 
+function hideElement(elem) {
+  elem.classList.add('hidden');
+}
+
+function showElement(elem) {
+  elem.classList.remove('hidden');
+}
+
 function downloadFile(url, fileName) {
   const a = document.createElement('a');
   a.href = url;
@@ -73,7 +81,7 @@ function loadAvailableFiles() {
     })
     .catch(err => {
       downloadError.innerText = `Error! ${err.status}: ${err.statusText}`;
-      downloadError.classList.remove('hidden');
+      showElement(downloadError);
     });
 }
 
@@ -99,7 +107,7 @@ document.querySelector('.uploadForm').onsubmit = function(e) {
   if (uploadButton.classList.contains('disabled')) {
     return;
   }
-  uploadError.classList.add('hidden');
+  hideElement(uploadError);
 
   const form = new FormData();
   const myHeaders = new Headers();
@@ -108,7 +116,7 @@ document.querySelector('.uploadForm').onsubmit = function(e) {
   request.post('/upload', { data: form, onUploadProgress })
     .catch(err => {
       uploadError.innerText = `Error! ${err.status}: ${err.statusText}`;
-      uploadError.classList.remove('hidden');
+      showElement(uploadError);
     });
 };
 
@@ -118,7 +126,7 @@ document.querySelector('.downloadForm').onsubmit = function(e) {
   if (!downloadInput.value) {
     return;
   }
-  downloadError.classList.add('hidden');
+  hideElement(downloadError);
   request.get(`/files/${e.target[0].value}`, { responseType: 'blob', onDownloadProgress })
     .then(response => {
       const url = window.URL.createObjectURL(response);
@@ -126,15 +134,15 @@ document.querySelector('.downloadForm').onsubmit = function(e) {
 
       if (isImage(response.type)) {
         img.src = url;
-        img.parentElement.classList.remove('hidden');
+        showElement(img.parentElement);
       } else {
         const fileName = e.target[0].value;
-        img.parentElement.classList.add('hidden');
+        hideElement(img.parentElement);
         downloadFile(url, fileName);
       }
     })
     .catch(err => {
       downloadError.innerText = `Error! ${err.status}: ${err.statusText}`;
-      downloadError.classList.remove('hidden');
+      showElement(downloadError);
     });
 };
