@@ -13,7 +13,7 @@ function addHeader(request, headersObj) {
 }
 
 function setParams(baseUrl, getUrl, paramsObj) {
-  const resURL = new URL(baseUrl + getUrl);
+  const resURL = new URL(getUrl, baseUrl);
 
   if (paramsObj instanceof URLSearchParams) {
     for (const param of paramsObj.entries()) {

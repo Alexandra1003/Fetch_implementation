@@ -26,7 +26,10 @@ function enableButton(elem) {
 uploadInput.addEventListener('change', event => {
   const uploadInputLabel = document.querySelector('.custom-file-label');
   enableButton(uploadButton);
-  uploadInputLabel.innerText = uploadInput.files[0].name;
+
+  if (uploadInput.files[0] !== undefined) {
+    uploadInputLabel.innerText = uploadInput.files[0].name;
+  }
 });
 
 downloadInput.addEventListener('input', event => {
