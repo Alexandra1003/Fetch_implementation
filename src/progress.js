@@ -7,17 +7,33 @@ const filesList = document.querySelector('.list-group');
 const uploadError = document.querySelector('.uploadError');
 const downloadError = document.querySelector('.downloadError');
 
+function hideElement(elem) {
+  elem.classList.add('hidden');
+}
+
+function showElement(elem) {
+  elem.classList.remove('hidden');
+}
+
+function disableButton(elem) {
+  elem.classList.add('disabled');
+}
+
+function enableButton(elem) {
+  elem.classList.remove('disabled');
+}
+
 uploadInput.addEventListener('change', event => {
   const uploadInputLabel = document.querySelector('.custom-file-label');
-  uploadButton.classList.remove('disabled');
+  enableButton(uploadButton);
   uploadInputLabel.innerText = uploadInput.files[0].name;
 });
 
 downloadInput.addEventListener('input', event => {
   if (downloadInput.value) {
-    downloadButton.classList.remove('disabled');
+    enableButton(downloadButton);
   } else {
-    downloadButton.classList.add('disabled');
+    disableButton(downloadButton);
   }
 });
 
@@ -25,14 +41,6 @@ function isImage(type) {
   const allowedFileTypes = ['image/png', 'image/jpeg', 'image/gif'];
 
   return allowedFileTypes.includes(type);
-}
-
-function hideElement(elem) {
-  elem.classList.add('hidden');
-}
-
-function showElement(elem) {
-  elem.classList.remove('hidden');
 }
 
 function downloadFile(url, fileName) {
@@ -62,7 +70,7 @@ function onListItemClick(event) {
   });
   event.target.classList.add('active');
   downloadInput.value = event.target.innerText;
-  downloadButton.classList.remove('disabled');
+  enableButton(downloadButton);
 }
 
 function loadAvailableFiles() {
