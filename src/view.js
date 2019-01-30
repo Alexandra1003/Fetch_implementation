@@ -78,7 +78,7 @@ document.querySelector('.downloadForm').onsubmit = function(e) {
   }
   hideElement(downloadError);
   const fileName = e.target[0].value;
-  download(e.target[0].value, onDownloadProgress) // eslint-disable-line
+  download(fileName, onDownloadProgress) // eslint-disable-line
     .then(response => {
       const url = window.URL.createObjectURL(response);
       const img = document.querySelector('.image');
