@@ -73,10 +73,11 @@ document.querySelector('.uploadForm').onsubmit = function(e) {
 document.querySelector('.downloadForm').onsubmit = function(e) {
   e.preventDefault();
 
-  if (!downloadInput.value) {
+  if (downloadButton.classList.contains('disabled')) {
     return;
   }
   hideElement(downloadError);
+  const fileName = e.target[0].value;
   download(e.target[0].value, onDownloadProgress) // eslint-disable-line
     .then(response => {
       const url = window.URL.createObjectURL(response);
@@ -86,7 +87,6 @@ document.querySelector('.downloadForm').onsubmit = function(e) {
         img.src = url;
         showElement(img.parentElement);
       } else {
-        const fileName = e.target[0].value;
         hideElement(img.parentElement);
         downloadFile(url, fileName);
       }
