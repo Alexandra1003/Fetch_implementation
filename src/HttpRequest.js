@@ -28,8 +28,7 @@ class HttpRequest {
       responseType = 'json',
       onDownloadProgress = null,
       onUploadProgress = null,
-      transformResponse,
-      transformRequest
+      transformResponse
     } = config;
 
     const requestURL = HttpRequest.generateURL(this.baseUrl, url, params);
