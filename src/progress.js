@@ -1,43 +1,28 @@
-function onDownloadProgress(progressEvent) {
-  if (progressEvent.lengthComputable) {
-    const percentComplete = Math.round(progressEvent.loaded / progressEvent.total * 100);
-    const progressBar = document.querySelector('.downloadBar');
-    const title = document.querySelector('title');
+const title = document.querySelector('title');
 
-    progressBar.style.width = `${percentComplete}%`;
-    progressBar.parentElement.classList.remove('transparent');
+function changeProgressBar(progressParams) {
+  const { nodeEl, event, onLoadedCallback, titlePercentage } = progressParams;
+  const percentComplete = Math.round(event.loaded / event.total * 100);
+
+  if (titlePercentage) {
     title.innerText = `Form ${percentComplete}%`;
-    disableButton(downloadButton);// eslint-disable-line
-
-    if (progressEvent.loaded === progressEvent.total) {
-      enableButton(downloadButton);// eslint-disable-line
-      setTimeout(() => {
-        progressBar.parentElement.classList.add('transparent');
-        progressBar.style.width = '0%';
-        title.innerText = 'Form';
-      }, 2000);
-    }
+  } else {
+    nodeEl.innerText = `${percentComplete}%`;
   }
-}
 
-function onUploadProgress(progressEvent) {
-  if (progressEvent.lengthComputable) {
-    const percentComplete = Math.round(progressEvent.loaded / progressEvent.total * 100);
-    const progressBar = document.querySelector('.uploadBar');
+  nodeEl.style.width = `${percentComplete}%`;
 
-    progressBar.style.width = `${percentComplete}%`;
-    progressBar.innerText = `${percentComplete}%`;
-    progressBar.parentElement.classList.remove('transparent');
-    disableButton(uploadButton);// eslint-disable-line
+  if (event.loaded === event.total) {
+    setTimeout(() => {
+      onLoadedCallback();
 
-    if (progressEvent.loaded === progressEvent.total) {
-      loadAvailableFiles(); // eslint-disable-line
-      enableButton(uploadButton);// eslint-disable-line
-      setTimeout(() => {
-        progressBar.parentElement.classList.add('transparent');
-        progressBar.style.width = '0%';
-        progressBar.innerText = '0%';
-      }, 2000);
-    }
+      if (titlePercentage) {
+        title.innerText = 'Form';
+      } else {
+        nodeEl.innerText = '0%';
+      }
+      nodeEl.parentElement.classList.add('transparent');
+      nodeEl.style.width = '0%';
+    }, 1500);
   }
 }

@@ -4,6 +4,8 @@ const uploadButton = document.querySelector('.uploadButton');
 const downloadButton = document.querySelector('.downloadButton');
 const uploadError = document.querySelector('.uploadError');
 const downloadError = document.querySelector('.downloadError');
+const uploadBar = document.querySelector('.uploadBar');
+const downloadBar = document.querySelector('.downloadBar');
 const filesList = document.querySelector('.list-group');
 
 function isImage(type) {
@@ -26,6 +28,11 @@ function disableButton(elem) {
 
 function enableButton(elem) {
   elem.classList.remove('disabled');
+}
+
+function onLoadStart(nodeEl, nodeButton) {
+  nodeEl.parentElement.classList.remove('transparent');
+  disableButton(nodeButton);
 }
 
 uploadInput.addEventListener('change', event => {
@@ -58,6 +65,8 @@ document.querySelector('.uploadForm').onsubmit = function(e) {
   if (uploadButton.classList.contains('disabled')) {
     return;
   }
+
+  onLoadStart(uploadBar, uploadButton);
   hideElement(uploadError);
 
   const form = new FormData();
@@ -67,6 +76,7 @@ document.querySelector('.uploadForm').onsubmit = function(e) {
     .catch(err => {
       uploadError.innerText = `Error! ${err.status}: ${err.statusText}`;
       showElement(uploadError);
+      enableButton(uploadButton);
     });
 };
 
@@ -76,7 +86,9 @@ document.querySelector('.downloadForm').onsubmit = function(e) {
   if (downloadButton.classList.contains('disabled')) {
     return;
   }
+  onLoadStart(downloadBar, downloadButton);
   hideElement(downloadError);
+
   const fileName = e.target[0].value;
   download(fileName, onDownloadProgress) // eslint-disable-line
     .then(response => {
@@ -94,6 +106,7 @@ document.querySelector('.downloadForm').onsubmit = function(e) {
     .catch(err => {
       downloadError.innerText = `Error! ${err.status}: ${err.statusText}`;
       showElement(downloadError);
+      enableButton(downloadButton);
     });
 };
 
