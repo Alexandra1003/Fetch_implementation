@@ -1,11 +1,12 @@
 const title = document.querySelector('title');
+const titleName = title.innerText;
 
 function changeProgressBar(progressParams) {
   const { nodeEl, event, onLoadedCallback, titlePercentage } = progressParams;
   const percentComplete = Math.round(event.loaded / event.total * 100);
 
   if (titlePercentage) {
-    title.innerText = `Form ${percentComplete}%`;
+    title.innerText = `${titleName} ${percentComplete}%`;
   } else {
     nodeEl.innerText = `${percentComplete}%`;
   }
@@ -17,7 +18,7 @@ function changeProgressBar(progressParams) {
       onLoadedCallback();
 
       if (titlePercentage) {
-        title.innerText = 'Form';
+        title.innerText = titleName;
       } else {
         nodeEl.innerText = '0%';
       }

@@ -1,5 +1,5 @@
-
-const request = new HttpRequest({ baseUrl: 'http://localhost:8000' }); // eslint-disable-line
+/* global HttpRequest */
+const request = new HttpRequest({ baseUrl: 'http://localhost:8000' });
 
 function loadFiles() {
   return request.get('/list');

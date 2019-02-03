@@ -1,22 +1,30 @@
-/* global uploadBar, downloadBar, loadAvailableFiles, enableButton, changeProgressBar, uploadButton, downloadButton */
-
-function onDownLoadedCallback() {
-  enableButton(downloadButton);
+function hideElement(elem) {
+  elem.classList.add('hidden');
 }
 
-function onUpLoadedCallback() {
-  loadAvailableFiles();
-  enableButton(uploadButton);
+function showElement(elem) {
+  elem.classList.remove('hidden');
 }
 
-window.onUploadProgress = event => changeProgressBar({
-  nodeEl: uploadBar,
-  event,
-  onLoadedCallback: onUpLoadedCallback
-});
-window.onDownloadProgress = event => changeProgressBar({
-  nodeEl: downloadBar,
-  event,
-  onLoadedCallback: onDownLoadedCallback,
-  titlePercentage: true
-});
+function disableButton(elem) {
+  elem.classList.add('disabled');
+}
+
+function enableButton(elem) {
+  elem.classList.remove('disabled');
+}
+
+function isDisabled(elem) {
+  return elem.classList.contains('disabled');
+}
+
+function onLoadStart(nodeEl, nodeButton) {
+  nodeEl.parentElement.classList.remove('transparent');
+  disableButton(nodeButton);
+}
+
+function isImage(type) {
+  const allowedFileTypes = ['image/png', 'image/jpeg', 'image/gif'];
+
+  return allowedFileTypes.includes(type);
+}
