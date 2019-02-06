@@ -1,5 +1,5 @@
 /* global  isImage, enableButton, disableButton, onLoadStart, isDisabled,
-hideElement, showElement, changeProgressBar, download, onDownloadProgress */
+hideElement, showElement, changeProgressBar, apiDownloadFile, onDownloadProgress */
 
 const downloadInput = document.querySelector('.downloadInput');
 const downloadButton = document.querySelector('.downloadButton');
@@ -35,7 +35,7 @@ document.querySelector('.downloadForm').onsubmit = function(e) {
   hideElement(downloadError);
 
   const fileName = e.target[0].value;
-  download(fileName, onDownloadProgress)
+  apiDownloadFile(fileName, onDownloadProgress)
     .then(response => {
       const url = window.URL.createObjectURL(response);
       const img = document.querySelector('.image');
