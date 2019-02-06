@@ -1,5 +1,5 @@
-/* global  loadAvailableFiles, enableButton, onLoadStart, hideElement,
-showElement, changeProgressBar, upload, onUploadProgress, isDisabled */
+/* global  loadAvailableFiles, processFileList, enableButton, onLoadStart, hideElement,
+showElement, changeProgressBar, apiUploadFile, onUploadProgress, isDisabled */
 
 const uploadInput = document.querySelector('.uploadInput');
 const uploadButton = document.querySelector('.uploadButton');
@@ -7,7 +7,8 @@ const uploadError = document.querySelector('.uploadError');
 const uploadBar = document.querySelector('.uploadBar');
 
 function onUpLoadedCallback() {
-  loadAvailableFiles();
+  processFileList();
+  //loadAvailableFiles();
   enableButton(uploadButton);
 }
 
@@ -33,7 +34,7 @@ document.querySelector('.uploadForm').onsubmit = function(e) {
   const form = new FormData();
   form.append('sampleFile', e.target.sampleFile.files[0]);
 
-  upload(form, onUploadProgress)
+  apiUploadFile(form, onUploadProgress)
     .catch(err => {
       uploadError.innerText = `Error! ${err.status}: ${err.statusText}`;
       showElement(uploadError);
